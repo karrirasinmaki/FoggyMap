@@ -26,6 +26,14 @@ define(["map/leaflet"], function(L) {
         map.getContainer().appendChild( canvas );
     };
     
+    var cutCircle = function(context, x, y, radius) {
+        c.save();
+        context.globalCompositeOperation = 'destination-out'
+        context.arc(x, y, radius, 0, Math.PI*2, true);
+        context.fill();
+        c.restore();
+    };
+    
     var tick = function() {
         var tl = map.getBounds().getNorthWest();
         var rb = map.getBounds().getSouthEast();
@@ -41,12 +49,11 @@ define(["map/leaflet"], function(L) {
             
 //            if( lat > tl.lat && lat < rb.lat &&
 //               long > tl.lng && long < rb.lng ) {
-                          
-                c.
-                c.clearRect( 
-                    -r+ canvas.offsetWidth * (1- (rb.lng - long) / (rb.lng - tl.lng)),
-                    -r+ canvas.offsetHeight * (1- (rb.lat - lat) / (rb.lat - tl.lat)),
-                    r*2, r*2
+                      
+                cutCircle(c,
+                    canvas.offsetWidth * (1- (rb.lng - long) / (rb.lng - tl.lng)),
+                    canvas.offsetHeight * (1- (rb.lat - lat) / (rb.lat - tl.lat)),
+                    r, 0, 360
                 );
                 
 //            }
