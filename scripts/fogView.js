@@ -49,12 +49,11 @@ define(["map/leaflet"], function(L) {
     };
     
     var tick = function() {
-        console.log("tick");
+        maskDraw(clipCtx);
         
         var mapXY = map.getPixelBounds().min;
         var mapDeltaX = mapXY.x - mapOriginX;
         var mapDeltaY = mapXY.y - mapOriginY;
-        console.log(mapDeltaX);
         
         c.save();
         
@@ -62,7 +61,7 @@ define(["map/leaflet"], function(L) {
         c.fillStyle = "rgba(100, 75, 75, 0.95)";
         c.fillRect(0, 0, canvas.width, canvas.height);
         
-        c.translate(-mapDeltaX, -mapDeltaY);
+//        c.translate(-mapDeltaX, -mapDeltaY);
         
         c.globalCompositeOperation = 'destination-out';
         c.drawImage( clipCanvas, 0, 0 );
@@ -70,10 +69,7 @@ define(["map/leaflet"], function(L) {
     };
     setInterval( tick, 1000 );
     
-    var maskDraw = function(c) {
-        mapOriginX = map.getPixelBounds().min.x;
-        mapOriginY = map.getPixelBounds().min.y;
-        
+    var maskDraw = function(c) {        
         c.save();
         c.shadowBlur = 20;
         c.shadowColor = "black";
@@ -92,18 +88,23 @@ define(["map/leaflet"], function(L) {
 //            if( lat > tl.lat && lat < rb.lat &&
 //               long > tl.lng && long < rb.lng ) {
                 
-            c.beginPath();
+                c.beginPath();
                 c.arc(
                     canvas.offsetWidth * (1- (rb.lng - long) / (rb.lng - tl.lng)),
                     canvas.offsetHeight * (1- (rb.lat - lat) / (rb.lat - tl.lat)),
-                    r, 0, 360
+                    r, 0, Math.PI*2
                 );
-            c.closePath();
+                c.closePath();
+                c.fill();
 //            }
         }
         
-        c.fill();
         c.restore();
+    };
+    
+    var updateMapOrigin = function() {
+        mapOriginX = map.getPixelBounds().min.x;
+        mapOriginY = map.getPixelBounds().min.y;
     };
     
     var update = function(pts) {
@@ -113,7 +114,8 @@ define(["map/leaflet"], function(L) {
     
     return {
         init: init,
-        update: update
+        update: update,
+        updateMapOrigin: updateMapOrigin
     }
     
 });

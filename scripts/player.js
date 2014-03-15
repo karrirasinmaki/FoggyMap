@@ -73,7 +73,9 @@ define(["fogView"], function(fogView) {
         }
         
         loadPoints();
-        getLocation(locationChange);
+        getLocation(function(position) {
+            fogView.updateMapOrigin(position);
+        });
         watchLocation(locationChange);
     };
         
