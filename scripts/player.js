@@ -5,24 +5,60 @@ define(["fogView"], function(fogView) {
     var latLngs = [];
     var pixelPoints = [];
     var points = [];
+    var currentPosition = undefined;
+    
+    var addPoint = function(position) {
+        points.push( [position.coords.latitude, position.coords.longitude] );
+        localStorage.points = JSON.stringify( points );
+    };
+    
+    var rotateMarker = function(marker, position) {
+        var heading = (position.coords.heading || 0) - 45;
+        var icon = marker._icon;
+        var transform = icon.style.webkitTransform;
+        transform += " rotate(" + heading + "deg)";
+        icon.style.webkitTransform = transform;
+    };
+    
+    var locationChange = function(position) {
+        currentPosition = position;
+        var lat = position.coords.latitude;
+        var long = position.coords.longitude;
+        var latLng = L.latLng(lat,long);
+        
+//            map.addLayer( L.circle(latLng, 3) );
+//            latLngs.push( latLng );
+        marker.setLatLng( latLng );
+        rotateMarker( marker, position );
+        
+        addPoint( position );
+        fogView.update( points );
+    };
     
     var locationEnabled = function() {
         return navigator.geolocation;
     };
     
     var getLocation = function(callback) {
+        if( currentPosition ) return currentPosition;
         if( locationEnabled() ) {
-            navigator.geolocation.getCurrentPosition(callback);
+            navigator.geolocation.getCurrentPosition(function(position) {
+                locationChange( position );
+                callback && callback( position );
+            });
         }
     };
     
     var watchLocation = function(callback) {
         if( locationEnabled() ) {
-            navigator.geolocation.watchPosition(callback);
+            navigator.geolocation.watchPosition(function(position) {
+                locationChange( position );
+                callback && callback( position );
+            });
         }
     };
     var loadPoints = function() {
-        points = JSON.parse( localStorage.points );
+        points = localStorage.points ? JSON.parse( localStorage.points ) : [];
 //        for(var i=0, l=points.length; i<l; ++i) {
 //            var latLng = L.latLng(points[i][0],points[i][1]);
 //            map.addLayer( L.circle(latLng, 3) );
@@ -38,29 +74,9 @@ define(["fogView"], function(fogView) {
         pixelPoints.push( [minx + (maxx-minx)/2, miny + (maxy-miny)/2] );
     };
     
-    var addPoint = function(position) {
-        points.push( [position.coords.latitude, position.coords.longitude] );
-        localStorage.points = JSON.stringify( points );
-    };
-    
-    var locationChange = function(position) {
-        var lat = position.coords.latitude;
-        var long = position.coords.longitude;
-        var latLng = L.latLng(lat,long);
-        
-//            map.addLayer( L.circle(latLng, 3) );
-//            latLngs.push( latLng );
-        marker.setLatLng( latLng );
-        
-        addPoint( position );
-        fogView.update( points );
-    };
-    
     var init = function(mapView) {
         map = mapView;
-        
-        fogView.init( map );
-        
+                
         var curPosIcon = L.divIcon({ className: "player" });
         marker = L.marker([51.5, -0.09], {icon: curPosIcon}).addTo(map);
         window.marker = marker;
@@ -73,9 +89,7 @@ define(["fogView"], function(fogView) {
         }
         
         loadPoints();
-        getLocation(function(position) {
-            fogView.updateMapOrigin(position);
-        });
+        fogView.init( map, points );
         watchLocation(locationChange);
     };
         
