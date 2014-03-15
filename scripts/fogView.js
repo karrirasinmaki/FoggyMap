@@ -48,6 +48,15 @@ define(["map/leaflet"], function(L) {
         c.restore();
     };
     
+    var animate = function(fn) {
+        try{
+            requestAnimationFrame(fn);
+            return;
+        } catch(e) {}
+        
+        setTimeout(fn, 30);
+    };
+    
     var tick = function() {
         maskDraw(clipCtx);
         
@@ -66,18 +75,22 @@ define(["map/leaflet"], function(L) {
         c.globalCompositeOperation = 'destination-out';
         c.drawImage( clipCanvas, 0, 0 );
         c.restore();
+        
+        animate(tick);
     };
-    setInterval( tick, 1000 );
+    animate(tick);
     
-    var maskDraw = function(c) {        
+    var maskDraw = function(c) {
+        var scale = map.getZoomScale(17);
+        
         c.save();
-        c.shadowBlur = 20;
+        c.shadowBlur = 20/scale;
         c.shadowColor = "black";
         c.fillStyle = "black";
         
         var tl = map.getBounds().getNorthWest();
         var rb = map.getBounds().getSouthEast();
-        var r = 30;
+        var r = 30/scale;
         
         c.clearRect(0, 0, c.canvas.width, c.canvas.height);
         for(var i=0, l=points.length; i<l; ++i) {
