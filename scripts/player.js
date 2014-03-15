@@ -29,6 +29,33 @@ define(["fogView"], function(fogView) {
 //        }
     };
     
+    var addPixelPoint = function() {
+        var bounds = map.getPixelBounds();
+        var minx = bounds.min.x;
+        var miny = bounds.min.y;
+        var maxx = bounds.max.x;
+        var maxy = bounds.max.y;
+        pixelPoints.push( [minx + (maxx-minx)/2, miny + (maxy-miny)/2] );
+    };
+    
+    var addPoint = function(position) {
+        points.push( [position.coords.latitude, position.coords.longitude] );
+        localStorage.points = JSON.stringify( points );
+    };
+    
+    var locationChange = function(position) {
+        var lat = position.coords.latitude;
+        var long = position.coords.longitude;
+        var latLng = L.latLng(lat,long);
+        
+//            map.addLayer( L.circle(latLng, 3) );
+//            latLngs.push( latLng );
+        marker.setLatLng( latLng );
+        
+        addPoint( position );
+        fogView.update( points );
+    };
+    
     var init = function(mapView) {
         map = mapView;
         
@@ -46,38 +73,10 @@ define(["fogView"], function(fogView) {
         }
         
         loadPoints();
-        fogView.update( points );
+        getLocation(locationChange);
+        watchLocation(locationChange);
     };
-    
-    var addPixelPoint = function() {
-        var bounds = map.getPixelBounds();
-        var minx = bounds.min.x;
-        var miny = bounds.min.y;
-        var maxx = bounds.max.x;
-        var maxy = bounds.max.y;
-        pixelPoints.push( [minx + (maxx-minx)/2, miny + (maxy-miny)/2] );
-    };
-    
-    var addPoint = function(position) {
-        points.push( [position.coords.latitude, position.coords.longitude] );
-        localStorage.points = JSON.stringify( points );
-    };
-    
-    if( locationEnabled() ) {
-        navigator.geolocation.watchPosition(function(position) {
-            var lat = position.coords.latitude;
-            var long = position.coords.longitude;
-            var latLng = L.latLng(lat,long);
-            
-//            map.addLayer( L.circle(latLng, 3) );
-//            latLngs.push( latLng );
-            marker.setLatLng( latLng );
-            
-            addPoint( position );
-            fogView.update( points );
-        });
-    }
-    
+        
     return {
         init: init,
         getLocation: getLocation,
