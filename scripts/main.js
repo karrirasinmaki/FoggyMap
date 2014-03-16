@@ -39,13 +39,19 @@ require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, pla
     openMenuButton.style.left = "0.5em";
     openMenuButton.style.top = "0.5em";
     
-    var syncButton = createButton({
-        textContent: "sync",
-        onclick: function(e) {
-            if(WrapperApp) WrapperApp.receiveData( JSON.stringify(player.getPoints()) );
-        }
-    });
-    syncButton.style.right = "0.5em";
-    syncButton.style.top = "0.5em";
+    if( window.WrapperApp ) {
+        var syncButton = createButton({
+            textContent: "sync",
+            onclick: function(e) {
+                try {
+                    if(WrapperApp) WrapperApp.receiveData( JSON.stringify(player.getPoints()) );
+                } catch(e) {
+                    console.info("WrapperApp not connected");
+                }
+            }
+        });
+        syncButton.style.right = "0.5em";
+        syncButton.style.top = "0.5em";
+    }
     
 });
