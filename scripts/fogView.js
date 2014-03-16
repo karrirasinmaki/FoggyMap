@@ -82,6 +82,21 @@ define(["map/leaflet"], function(L) {
         canvasTiles.redraw();
     };
     
+    var matrixToArray = function(matrix) {
+        return matrix.substr(7, matrix.length - 8).split(', ');
+    };
+    
+    var getTransformMatrix = function(el) {
+        var st = window.getComputedStyle( el, null);
+        var matrix = st.getPropertyValue("-webkit-transform");
+        return matrixToArray( matrix );
+    }
+    
+    var getTranformPosition = function(el) {
+        var matrixArr = getTransformMatrix( el );
+        return { x: matrixArr[4], y: matrixArr[5] };
+    };
+    
     var drawFog = function(c) {
         var mapXY = map.getPixelBounds().min;
 //        var mapDeltaX = (mapXY.x - mapOriginX);
@@ -98,9 +113,8 @@ define(["map/leaflet"], function(L) {
         
         c.globalCompositeOperation = 'destination-out';
         
-        var dx = parseInt( canvas.style.left.replace("px") );
-        var dy = parseInt( canvas.style.top.replace("px") );
-        c.drawImage( clipCanvas, -dx, -dy );
+        var transformPos = getTranformPosition( canvas );
+        c.drawImage( clipCanvas, -transformPos.x, -transformPos.y );
         c.restore();
     }
     
@@ -120,6 +134,8 @@ define(["map/leaflet"], function(L) {
     };
     
     var updateMapDelta = function(pos) {
+        console.log("updateMapDelta");
+        console.log(pos);
         if( !pos || !pos.x || !pos.y ) return;
         mapDeltaX = pos.x;
         mapDeltaY = pos.y;
@@ -173,7 +189,8 @@ define(["map/leaflet"], function(L) {
         clipCanvas = canvas.cloneNode(false);
         clipCanvas.id = "mask";
         clipCtx = clipCanvas.getContext("2d");
-//        map.getContainer().appendChild( clipCanvas );
+        clipCanvas.style.opacity = "0.2";
+        map.getContainer().appendChild( clipCanvas );
         
         window.onresize = windowResize;
         
