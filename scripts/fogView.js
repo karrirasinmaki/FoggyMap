@@ -77,10 +77,6 @@ define(["map/leaflet"], function(L) {
         
         c.restore();
     };
-    var updateMask = function() {
-        maskDraw( clipCtx );
-        canvasTiles.redraw();
-    };
     
     var matrixToArray = function(matrix) {
         return matrix.substr(7, matrix.length - 8).split(', ');
@@ -140,11 +136,15 @@ define(["map/leaflet"], function(L) {
         mapDeltaX = pos.x;
         mapDeltaY = pos.y;
     };
+    var updateMask = function() {
+        maskDraw( clipCtx );
+        canvasTiles.redraw();
+    };
     
     var update = function(pts) {
         updateMapOrigin();
         points = pts;
-        maskDraw( clipCtx );
+        updateMask();
     };
     
     var windowResize = function() {

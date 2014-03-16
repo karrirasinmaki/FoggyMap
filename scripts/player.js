@@ -20,20 +20,28 @@ define(["fogView"], function(fogView) {
         icon.style.webkitTransform = transform;
     };
     
-    var locationChange = function(position) {
-        currentPosition = position;
+    var postToLatLng = function(position) {
         var lat = position.coords.latitude;
         var long = position.coords.longitude;
         var latLng = L.latLng(lat,long);
+        return latLng;
+    };
+    
+    var locationChange = function(position) {
+        var latLng = postToLatLng( position );
         
-        addPoint( position );
+        window.pos = currentPosition;
         
-        if( map ) {
-            marker.setLatLng( latLng );
-            rotateMarker( marker, position );
-            
-            fogView.update( points );
+        if( !currentPosition || latLng.distanceTo( postToLatLng(currentPosition) ) > 10 ) {
+            addPoint( position );
+            if( map ) {
+                marker.setLatLng( latLng );
+                rotateMarker( marker, position );
+                fogView.update( points );
+            }
         }
+        
+        currentPosition = position;
     };
     
     var locationEnabled = function() {
