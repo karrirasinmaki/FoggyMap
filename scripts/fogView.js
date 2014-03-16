@@ -187,6 +187,7 @@ define(["map/leaflet"], function(L) {
         window.onresize = windowResize;
         
         update( points );
+        updateMask();
     };
     
     return {
