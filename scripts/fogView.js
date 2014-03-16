@@ -116,16 +116,6 @@ define(["map/leaflet"], function(L) {
         c.restore();
     }
     
-    var currentScale = 0;    
-    var tick = function() {
-        if( currentScale != getScale() ) {
-            maskDraw( clipCtx );
-            currentScale = getScale();
-        }
-        
-        animate(tick);
-    };
-    
     var updateMapOrigin = function() {
         mapOriginX = map.getPixelBounds().min.x;
         mapOriginY = map.getPixelBounds().min.y;
@@ -147,6 +137,14 @@ define(["map/leaflet"], function(L) {
         updateMask();
     };
     
+    var currentScale = 0;    
+    var checkScaleChange = function() {
+        if( currentScale != getScale() ) {
+            maskDraw( clipCtx );
+            currentScale = getScale();
+        }
+    };
+    
     var windowResize = function() {
         clipCanvas.width = window.innerWidth;
         clipCanvas.height = window.innerHeight;
@@ -161,6 +159,7 @@ define(["map/leaflet"], function(L) {
             updateMapDelta( e.target.dragging._lastPos );
             updateMask();
         });
+        map.on("zoomend", checkScaleChange);
         
         var overlayPane = map.getPanes().overlayPane;
         var mapSize = map.getSize();
@@ -188,7 +187,6 @@ define(["map/leaflet"], function(L) {
         window.onresize = windowResize;
         
         update( points );
-        tick();
     };
     
     return {
