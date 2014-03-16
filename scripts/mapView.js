@@ -4,13 +4,16 @@ define(["map/leaflet"], function(L) {
     mapWrapper.id = "map";
     document.body.appendChild( mapWrapper );
     
-    var map = L.map("map", { zoomControl:false }).setView([51.505, -0.09], 17);
+    var map = L.map("map", { zoomControl:false }).setView([0, 0], 17);
     window.map = map;
     
-    // add an OpenStreetMap tile layer
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    var init = function(position) {
+        setPosition( position );
+        // add an OpenStreetMap tile layer
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    };
         
     var setPosition = function(position) { 
         map.panTo([position.coords.latitude, position.coords.longitude]);
@@ -38,7 +41,8 @@ define(["map/leaflet"], function(L) {
         appendElement: appendElement,
         addGeoJson: addGeoJson,
         addLayer: addLayer,
-        getMap: getMap
+        getMap: getMap,
+        init: init
     }
     
 });

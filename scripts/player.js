@@ -26,13 +26,14 @@ define(["fogView"], function(fogView) {
         var long = position.coords.longitude;
         var latLng = L.latLng(lat,long);
         
-//            map.addLayer( L.circle(latLng, 3) );
-//            latLngs.push( latLng );
-        marker.setLatLng( latLng );
-        rotateMarker( marker, position );
-        
         addPoint( position );
-        fogView.update( points );
+        
+        if( map ) {
+            marker.setLatLng( latLng );
+            rotateMarker( marker, position );
+            
+            fogView.update( points );
+        }
     };
     
     var locationEnabled = function() {

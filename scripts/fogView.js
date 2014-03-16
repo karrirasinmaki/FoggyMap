@@ -47,8 +47,8 @@ define(["map/leaflet"], function(L) {
         if( bounds.contains( L.latLng(lat, long) ) ) {
             c.beginPath();
             c.arc(
-                canvas.offsetWidth * (1- (rb.lng - long) / (rb.lng - tl.lng)),
-                canvas.offsetHeight * (1- (rb.lat - lat) / (rb.lat - tl.lat)),
+                window.innerWidth * (1- (rb.lng - long) / (rb.lng - tl.lng)),
+                window.innerHeight * (1- (rb.lat - lat) / (rb.lat - tl.lat)),
                 r, 0, Math.PI*2
             );
             c.closePath();
@@ -136,8 +136,6 @@ define(["map/leaflet"], function(L) {
     };
     
     var updateMapDelta = function(pos) {
-        console.log("updateMapDelta");
-        console.log(pos);
         if( !pos || !pos.x || !pos.y ) return;
         mapDeltaX = pos.x;
         mapDeltaY = pos.y;
@@ -177,18 +175,11 @@ define(["map/leaflet"], function(L) {
             // draw something on the tile canvas
             drawFog(ctx);
         }
+        canvasTiles.bringToFront();
         
-        canvas = document.createElement("canvas");
-        canvas.id = "fog";
-        canvas.style.position = "absolute";
-        canvas.style.top = "0";
-        canvas.style.left = "0";
-        canvas.width = mapSize.x;
-        canvas.height = mapSize.y;
-        c = canvas.getContext("2d");
-        map.getContainer().appendChild( canvas );
-        
-        clipCanvas = canvas.cloneNode(false);
+        clipCanvas = document.createElement("canvas");
+        clipCanvas.width = window.innerWidth;
+        clipCanvas.height = window.innerHeight;
         clipCanvas.id = "mask";
         clipCtx = clipCanvas.getContext("2d");
 //        clipCanvas.style.opacity = "0.2";

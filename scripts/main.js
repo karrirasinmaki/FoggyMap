@@ -3,10 +3,22 @@ require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, pla
     window.receiveData = function(data) {
         alert( data );
     };
+    
+    var createButton = function(params) {
+        var button = document.createElement("button");
+        button.textContent = params.textContent;
+        button.style.position = "absolute";
+        button.onclick = params.onclick;
+        document.body.appendChild( button );
+        return button;
+    };
         
     player.init(mapView);
+    player.getLocation(function(position) {
+        mapView.init( position );
+    });
     
-    var myLocationButton = utils.createButton({
+    var myLocationButton = createButton({
         textContent: "where am I?",
         onclick: function(e) {
             player.getLocation(function(position) {
@@ -15,15 +27,10 @@ require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, pla
         }
     });
     myLocationButton.style.left = "0.5em";
-    myLocationButton.style.bottom = "0.5em";
-    
-    player.getLocation(function(position) {
-        mapView.setPosition( position );
-    });
-    
+    myLocationButton.style.bottom = "0.5em";    
     
     sidemenu.create();
-    var openMenuButton = utils.createButton({
+    var openMenuButton = createButton({
         textContent: "menu",
         onclick: function(e) {
             sidemenu.toggle();
@@ -32,7 +39,7 @@ require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, pla
     openMenuButton.style.left = "0.5em";
     openMenuButton.style.top = "0.5em";
     
-    var syncButton = utils.createButton({
+    var syncButton = createButton({
         textContent: "sync",
         onclick: function(e) {
             if(WrapperApp) WrapperApp.receiveData( player.getPoints() );
