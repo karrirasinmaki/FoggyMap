@@ -31,11 +31,13 @@ require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, pla
     
     sidemenu.create();
     var openMenuButton = createButton({
-        textContent: "menu",
+        textContent: "",
         onclick: function(e) {
             sidemenu.toggle();
         }
     });
+    openMenuButton.innerHTML = "&#8801;";
+    openMenuButton.style.fontSize = "1.5em";
     openMenuButton.style.left = "0.5em";
     openMenuButton.style.top = "0.5em";
     

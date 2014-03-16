@@ -6,7 +6,7 @@ define(function() {
     var createListItem = function(params) {
         var li = document.createElement("div");
         li.textContent = params.textContent;
-        li.style.padding = "0.2em 0";
+        li.className = "list-item";
         return li;
     };
     
@@ -19,15 +19,15 @@ define(function() {
         element.style.bottom = "0";
         element.style.background = "#000";
         element.style.color = "#fff";
-        element.style.fontSize = "2.5em";
-        element.style.fontFamily = "sans-serif";
+        element.style.fontSize = "2em";
+        element.style.fontFamily = "monospace";
         element.style.transition = "all 0.5s";
-        element.style.padding = "1em";
+        element.style.padding = "2em 0em";
         
-        element.appendChild( createListItem({textContent: "PROFILE"}) );
-        element.appendChild( createListItem({textContent: "FRIENDS"}) );
-        element.appendChild( createListItem({textContent: "STATICS"}) );
-        element.appendChild( createListItem({textContent: "SETTING"}) );
+        element.appendChild( createListItem({textContent: "profile"}) );
+        element.appendChild( createListItem({textContent: "friends"}) );
+        element.appendChild( createListItem({textContent: "statics"}) );
+        element.appendChild( createListItem({textContent: "settings"}) );
         
         element.style.left = "-100%";
         document.body.appendChild( element );
