@@ -1,7 +1,13 @@
 require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, player, sidemenu) {
     
     window.receiveData = function(data) {
-        alert( data );
+        console.info("Data received");
+        try {
+            var pointsArr = JSON.parse( data );
+            player.setPoints( pointsArr );
+        } catch(e) {
+            console.log( e );
+        }
     };
     
     var createButton = function(params) {

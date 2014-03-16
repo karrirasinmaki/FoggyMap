@@ -78,6 +78,10 @@ define(["fogView"], function(fogView) {
 //            map.addLayer( L.circle(latLng, 3) );
 //        }
     };
+    var setPoints = function(arr) {
+        points = points.concat( arr );
+        fogView.update( points );
+    };
     
     var addPixelPoint = function() {
         var bounds = map.getPixelBounds();
@@ -115,7 +119,8 @@ define(["fogView"], function(fogView) {
         init: init,
         getLocation: getLocation,
         watchLocation: watchLocation,
-        getPoints: getPoints
+        getPoints: getPoints,
+        setPoints: setPoints
     }
 
 });
