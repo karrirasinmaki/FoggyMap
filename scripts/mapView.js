@@ -2,8 +2,6 @@ define(["map/leaflet"], function(L) {
     
     var mapWrapper = document.createElement("div");
     mapWrapper.id = "map";
-    mapWrapper.style.width = window.innerWidth + "px";
-    mapWrapper.style.height = window.innerHeight + "px";
     document.body.appendChild( mapWrapper );
     
     var map = L.map("map").setView([51.505, -0.09], 17);

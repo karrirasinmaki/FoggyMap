@@ -9,7 +9,7 @@ define(["fogView"], function(fogView) {
     
     var addPoint = function(position) {
         points.push( [position.coords.latitude, position.coords.longitude] );
-        localStorage.points = JSON.stringify( points );
+        localStorage.setItem( "points", JSON.stringify( points ) );
     };
     
     var rotateMarker = function(marker, position) {
@@ -58,7 +58,12 @@ define(["fogView"], function(fogView) {
         }
     };
     var loadPoints = function() {
-        points = localStorage.points ? JSON.parse( localStorage.points ) : [];
+        if( localStorage ) {
+            var value = localStorage.getItem("points");
+            if( value == null) points = [];
+            else points = JSON.parse( value );
+        }
+        else points = [];
 //        for(var i=0, l=points.length; i<l; ++i) {
 //            var latLng = L.latLng(points[i][0],points[i][1]);
 //            map.addLayer( L.circle(latLng, 3) );
