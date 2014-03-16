@@ -42,7 +42,7 @@ require(["utils", "mapView", "player", "sidemenu"], function(utils, mapView, pla
     var syncButton = createButton({
         textContent: "sync",
         onclick: function(e) {
-            if(WrapperApp) WrapperApp.receiveData( player.getPoints() );
+            if(WrapperApp) WrapperApp.receiveData( JSON.stringify(player.getPoints()) );
         }
     });
     syncButton.style.right = "0.5em";
