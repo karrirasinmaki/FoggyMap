@@ -97,11 +97,16 @@ define(["fogView"], function(fogView) {
         fogView.init( map, points );
         watchLocation(locationChange);
     };
+    
+    var getPoints = function() {
+        return points;
+    };
         
     return {
         init: init,
         getLocation: getLocation,
-        watchLocation: watchLocation
+        watchLocation: watchLocation,
+        getPoints: getPoints
     }
 
 });

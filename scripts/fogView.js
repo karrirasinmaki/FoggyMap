@@ -114,6 +114,8 @@ define(["map/leaflet"], function(L) {
         c.globalCompositeOperation = 'destination-out';
         
         var transformPos = getTranformPosition( canvas );
+        transformPos.x = transformPos.x || parseInt(canvas.style.left.replace("px", ""));
+        transformPos.y = transformPos.y || parseInt(canvas.style.top.replace("px", ""));
         c.drawImage( clipCanvas, -transformPos.x, -transformPos.y );
         c.restore();
     }
@@ -189,8 +191,8 @@ define(["map/leaflet"], function(L) {
         clipCanvas = canvas.cloneNode(false);
         clipCanvas.id = "mask";
         clipCtx = clipCanvas.getContext("2d");
-        clipCanvas.style.opacity = "0.2";
-        map.getContainer().appendChild( clipCanvas );
+//        clipCanvas.style.opacity = "0.2";
+//        map.getContainer().appendChild( clipCanvas );
         
         window.onresize = windowResize;
         

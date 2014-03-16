@@ -4,7 +4,7 @@ define(["map/leaflet"], function(L) {
     mapWrapper.id = "map";
     document.body.appendChild( mapWrapper );
     
-    var map = L.map("map").setView([51.505, -0.09], 17);
+    var map = L.map("map", { zoomControl:false }).setView([51.505, -0.09], 17);
     window.map = map;
     
     // add an OpenStreetMap tile layer
