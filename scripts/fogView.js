@@ -5,8 +5,12 @@ define(["map/leaflet"], function(L) {
     var map = undefined;
     var mapOriginX = undefined;
     var mapOriginY = undefined;
+    var mapDeltaX = undefined;
+    var mapDeltaY = undefined;
     var canvas = undefined;
     var c = undefined; // context
+    
+    var canvasTiles = undefined;
     
     var clipCanvas = undefined;
     var clipCtx = undefined;
@@ -73,17 +77,16 @@ define(["map/leaflet"], function(L) {
         
         c.restore();
     };
+    var updateMask = function() {
+        maskDraw( clipCtx );
+        canvasTiles.redraw();
+    };
     
-    var currentScale = 0;    
-    var tick = function() {
-        if( currentScale != getScale() ) {
-            maskDraw( clipCtx );
-            currentScale = getScale();
-        }
-        
+    var drawFog = function(c) {
         var mapXY = map.getPixelBounds().min;
-        var mapDeltaX = (mapXY.x - mapOriginX);
-        var mapDeltaY = (mapXY.y - mapOriginY);
+//        var mapDeltaX = (mapXY.x - mapOriginX);
+//        var mapDeltaY = (mapXY.y - mapOriginY);
+        var canvas = c.canvas;
         
         c.save();
         
@@ -94,8 +97,19 @@ define(["map/leaflet"], function(L) {
         c.translate(-mapDeltaX, -mapDeltaY);
         
         c.globalCompositeOperation = 'destination-out';
-        c.drawImage( clipCanvas, 0, 0 );
+        
+        var dx = parseInt( canvas.style.left.replace("px") );
+        var dy = parseInt( canvas.style.top.replace("px") );
+        c.drawImage( clipCanvas, -dx, -dy );
         c.restore();
+    }
+    
+    var currentScale = 0;    
+    var tick = function() {
+        if( currentScale != getScale() ) {
+            maskDraw( clipCtx );
+            currentScale = getScale();
+        }
         
         animate(tick);
     };
@@ -103,6 +117,12 @@ define(["map/leaflet"], function(L) {
     var updateMapOrigin = function() {
         mapOriginX = map.getPixelBounds().min.x;
         mapOriginY = map.getPixelBounds().min.y;
+    };
+    
+    var updateMapDelta = function(pos) {
+        if( !pos || !pos.x || !pos.y ) return;
+        mapDeltaX = pos.x;
+        mapDeltaY = pos.y;
     };
     
     var update = function(pts) {
@@ -121,9 +141,24 @@ define(["map/leaflet"], function(L) {
         map = mapV.getMap();
         mapOriginX = map.getPixelBounds().min.x;
         mapOriginY = map.getPixelBounds().min.y;
+        map.on("moveend", function(e) {
+            updateMapDelta( e.target.dragging._lastPos );
+            updateMask();
+        });
         
         var overlayPane = map.getPanes().overlayPane;
         var mapSize = map.getSize();
+        
+
+        canvasTiles = L.tileLayer.canvas().addTo( map );
+        canvasTiles.on("loading", function() {
+            maskDraw( clipCtx );
+        });
+        canvasTiles.drawTile = function(canvas, tilePoint, zoom) {
+            var ctx = canvas.getContext('2d');
+            // draw something on the tile canvas
+            drawFog(ctx);
+        }
         
         canvas = document.createElement("canvas");
         canvas.id = "fog";
@@ -132,12 +167,13 @@ define(["map/leaflet"], function(L) {
         canvas.style.left = "0";
         canvas.width = mapSize.x;
         canvas.height = mapSize.y;
-        
         c = canvas.getContext("2d");
         map.getContainer().appendChild( canvas );
         
         clipCanvas = canvas.cloneNode(false);
+        clipCanvas.id = "mask";
         clipCtx = clipCanvas.getContext("2d");
+//        map.getContainer().appendChild( clipCanvas );
         
         window.onresize = windowResize;
         

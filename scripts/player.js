@@ -40,7 +40,7 @@ define(["fogView"], function(fogView) {
     };
     
     var getLocation = function(callback) {
-        if( currentPosition ) return currentPosition;
+        if( currentPosition && callback ) callback( currentPosition );
         if( locationEnabled() ) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 locationChange( position );

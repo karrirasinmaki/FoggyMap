@@ -11,9 +11,7 @@ define(["map/leaflet"], function(L) {
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    
-    
-    
+        
     var setPosition = function(position) { 
         map.panTo([position.coords.latitude, position.coords.longitude]);
     };
